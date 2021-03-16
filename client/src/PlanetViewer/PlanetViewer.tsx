@@ -1,6 +1,4 @@
-import { render } from '@testing-library/react';
 import React, { ReactElement, useEffect } from 'react'
-import * as THREE from 'three';
 import { PlanetAnimator } from './PlanetAnimator';
 interface Props {
     
