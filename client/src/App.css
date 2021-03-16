@@ -1,0 +1,32 @@
+.page-container{
+  display: grid;
+  grid-template:
+    "s v v" 1fr
+    "s v v" 1fr
+    "s b b" 15% / 15% 1fr 1fr;
+  height: 100vh;
+}
+body, html{
+  margin: 0;
+  height: 100vh;
+}
+#root{
+  height: 100vh;
+}
+.sidebar{
+  grid-area: s;
+  background-color: red;
+}
+.viewer{
+  grid-area: v;
+  background-color: green;
+}
+.footer{
+  grid-area: b;
+  background-color: blue;
+}
+#viewer-container{
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
