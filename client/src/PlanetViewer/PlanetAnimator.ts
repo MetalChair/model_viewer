@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 import { CameraContainer } from '../CameraContainer/CameraContainer';
 import { Scene } from '../Scene/Scene';
-import { StandardMaterialModel, StandardMaterialOptions } from '../StandardMaterialModel/StandardMaterialModel';
+import { MaterialModel, StandardMaterialOptions } from '../MaterialModel/MaterialModel';
 import "../TextureFactory/TextureFactory";
 import { TextureFactory } from '../TextureFactory/TextureFactory';
+import { TickableMaterialModel } from '../TickableMaterialModel/TickableMaterialModel';
+import { Skybox } from '../Skybox/Skybox';
+import { TextureLoader } from 'three';
 export class PlanetAnimator{
     scene: Scene;
     camera: CameraContainer;
@@ -21,36 +24,42 @@ export class PlanetAnimator{
             this.doTick = this.doTick.bind(this);
         }
     }
-    addCube(){
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-        const cube = new THREE.Mesh( geometry, material );
-        this.scene.addObject(cube);
-
-        TextureFactory.createTextureFromImage(
-            "/earth_texture.jpg"
-        ).then((tex) =>{
-            console.log("Texture",tex);
-            let matOpts:StandardMaterialOptions = {
-                color: new THREE.Color(255,0,0),
-                map: tex,
-                bumpMap: tex,
-                metalness: 5,
-            };
-            console.log("PEEP");
-            const sgeometry = new THREE.SphereGeometry();
-            const matthing = new StandardMaterialModel(matOpts, sgeometry);
-            const sphere = new THREE.Mesh( sgeometry, matthing.getMaterial() );
-            sphere.position.set(0, 2, 0);
-            console.log(sphere);
-            this.scene.addObject(sphere);
-        })
-        .catch((err)=>{
-            console.log(err);
-        });
+    setupEarth(){
+        let skybox = new Skybox(
+            "/spacebox2/",".png", this.scene
+        );
+        let tex = new TextureLoader().load("/earth.png")
+        let rough = new TextureLoader().load("/earth_rough.png")
+        console.log("Texture:",tex);
+        let matOpts:StandardMaterialOptions = {
+            map: tex,
+            roughnessMap: rough
+        };
+        const sgeometry = new THREE.SphereGeometry(
+            1, 32, 32
+        );
+        const obj = new TickableMaterialModel(matOpts, sgeometry);
+        obj.mesh.rotateOnAxis(
+            new THREE.Vector3(0,0,1),
+            0.4712389
+        );
+        obj.tick_function = (obj : MaterialModel) =>{
+            obj.mesh.rotateOnAxis(
+                new THREE.Vector3(0, 1, 0),
+                .0005
+            );
+        }
+        console.log("Sphere",obj);
+        const light = new THREE.SpotLight(0xffffff, 1, 250, 50);
+        light.position.set(0,5,5);
+        this.scene.addObject(
+            light.clone()
+        );
+        this.scene.addObject(obj);
     }
     doTick(){
         this.camera.doTick();
+        this.scene.doTicks();
         requestAnimationFrame(this.doTick);
         this.renderer.render( this.scene.getScene(), this.camera.getCam() );
     }

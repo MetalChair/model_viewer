@@ -8,10 +8,12 @@ export module TextureFactory{
         return new Promise((resolve, reject) =>{
             loader.load(path, 
                 function(newTex){
+                    console.log("Loaded texture successfuly!");
                     resolve(newTex);
                 },
                 undefined,
                 function(err){
+                    console.error("TEXTURE LOAD ERROR");
                     reject(err);
                 }
             );

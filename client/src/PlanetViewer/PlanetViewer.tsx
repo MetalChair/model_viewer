@@ -10,7 +10,7 @@ export default function PlanetViewer({}: Props): ReactElement {
         const element = document.getElementById("viewer-container");
         if(element){
             animator = new PlanetAnimator(element);
-            animator.addCube();
+            animator.setupEarth();
             animator.doTick();
         }
 
